@@ -80,8 +80,8 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
+##############################
 # INBOX
-
 app.include_router(inbox_route)
 
 # GET Conversations
@@ -488,7 +488,7 @@ def get_dashboard_info(db: Session = Depends(get_db)):
         "total_inboxes": total_inboxes
     }
 
-@app.get("/dashboard2", tags=["Dashboard"])
+@app.get("/dashboard_time", tags=["Dashboard"])
 def get_dashboard_info(db: Session = Depends(get_db)):
     today = datetime.now().date()
     week_ago = today - timedelta(days=7)
