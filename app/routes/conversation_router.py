@@ -4,20 +4,20 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
 from app.database import get_db
-from app.models import Message, Contact
+from app.models import message, contact
 
 conversation_route = APIRouter(tags=["Conversation"])
 
 @conversation_route.get("/conversations")
 def get_conversations(instanceId: str = Query(...), db: Session = Depends(get_db)):
     try:
-        contacts = db.query(Contact).filter(Contact.instanceId == instanceId).all()
+        contacts = db.query(contact).filter(contact.instanceId == instanceId).all()
         conversations = []
         for contact in contacts:
             last_message = (
-                db.query(Message)
-                .filter(Message.WhatsappjId == contact.WhatsappjId)
-                .order_by(desc(Message.datetime))
+                db.query(message)
+                .filter(message.WhatsappjId == contact.WhatsappjId)
+                .order_by(desc(message.datetime))
                 .first()
             )
             if last_message:

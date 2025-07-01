@@ -3,14 +3,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models import Contact
+from app.models import contact
 
 contact_route = APIRouter(prefix="/contacts", tags=["Contact"])
 
 @contact_route.get("/")
 def get_contacts(instanceId: str = Query(...), db: Session = Depends(get_db)):
     try:
-        contacts = db.query(Contact).filter(Contact.instanceId == instanceId).all()
+        contacts = db.query(contact).filter(contact.instanceId == instanceId).all()
         result = [
             {
                 "contactId": contact.contactId,
@@ -34,11 +34,11 @@ def create_contact(
     db: Session = Depends(get_db)
 ):
     try:
-        exists = db.query(Contact).filter(Contact.WhatsappjId == WhatsappjId, Contact.instanceId == instanceId).first()
+        exists = db.query(contact).filter(contact.WhatsappjId == WhatsappjId, contact.instanceId == instanceId).first()
         if exists:
             return JSONResponse(content={"status": "Error", "details": "Contact already exists"})
         import uuid
-        contact = Contact(
+        contact = contact(
             contactId=str(uuid.uuid4()),
             pushname=pushname,
             WhatsappjId=WhatsappjId,
@@ -64,7 +64,7 @@ def create_contact(
 @contact_route.delete("/")
 def delete_contact(contactId: str = Query(...), db: Session = Depends(get_db)):
     try:
-        contact = db.query(Contact).filter(Contact.contactId == contactId).first()
+        contact = db.query(contact).filter(contact.contactId == contactId).first()
         if not contact:
             return JSONResponse(
                 status_code=status.HTTP_404_NOT_FOUND,

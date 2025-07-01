@@ -4,7 +4,7 @@ from sqlalchemy import func, extract
 from datetime import datetime, timedelta
 
 from app.database import get_db
-from app.models import Message, Contact, Inbox
+from app.models import message, contact, inbox
 
 
 dashboard_route = APIRouter(tags=["Dashboard"])
@@ -16,44 +16,44 @@ def get_dashboard_info(db: Session = Depends(get_db)):
     month_ago = today - timedelta(days=30)
 
     sent_today = db.query(func.count()).filter(
-        Message.Message_Type == "Outgoing",
-        func.date(Message.datetime) == today
+        message.Message_Type == "Outgoing",
+        func.date(message.datetime) == today
     ).scalar()
     sent_week = db.query(func.count()).filter(
-        Message.Message_Type == "Outgoing",
-        func.date(Message.datetime) >= week_ago
+        message.Message_Type == "Outgoing",
+        func.date(message.datetime) >= week_ago
     ).scalar()
     sent_month = db.query(func.count()).filter(
-        Message.Message_Type == "Outgoing",
-        func.date(Message.datetime) >= month_ago
+        message.Message_Type == "Outgoing",
+        func.date(message.datetime) >= month_ago
     ).scalar()
 
     received_today = db.query(func.count()).filter(
-        Message.Message_Type == "Incoming",
-        func.date(Message.datetime) == today
+        message.Message_Type == "Incoming",
+        func.date(message.datetime) == today
     ).scalar()
     received_week = db.query(func.count()).filter(
-        Message.Message_Type == "Incoming",
-        func.date(Message.datetime) >= week_ago
+        message.Message_Type == "Incoming",
+        func.date(message.datetime) >= week_ago
     ).scalar()
     received_month = db.query(func.count()).filter(
-        Message.Message_Type == "Incoming",
-        func.date(Message.datetime) >= month_ago
+        message.Message_Type == "Incoming",
+        func.date(message.datetime) >= month_ago
     ).scalar()
 
-    total_active_contacts = db.query(func.count(Contact.contactId)).scalar()
+    total_active_contacts = db.query(func.count(contact.contactId)).scalar()
 
-    contacts_today = db.query(func.count(func.distinct(Message.WhatsappjId))).filter(
-        func.date(Message.datetime) == today
+    contacts_today = db.query(func.count(func.distinct(message.WhatsappjId))).filter(
+        func.date(message.datetime) == today
     ).scalar()
-    contacts_week = db.query(func.count(func.distinct(Message.WhatsappjId))).filter(
-        func.date(Message.datetime) >= week_ago
+    contacts_week = db.query(func.count(func.distinct(message.WhatsappjId))).filter(
+        func.date(message.datetime) >= week_ago
     ).scalar()
-    contacts_month = db.query(func.count(func.distinct(Message.WhatsappjId))).filter(
-        func.date(Message.datetime) >= month_ago
+    contacts_month = db.query(func.count(func.distinct(message.WhatsappjId))).filter(
+        func.date(message.datetime) >= month_ago
     ).scalar()
 
-    total_inboxes = db.query(func.count(Inbox.inbox_id)).scalar()
+    total_inboxes = db.query(func.count(inbox.inbox_id)).scalar()
 
     return {
         "messages_sent": {
@@ -82,61 +82,61 @@ def get_dashboard_time(db: Session = Depends(get_db)):
     month_ago = today - timedelta(days=30)
 
     sent_today = db.query(func.count()).filter(
-        Message.Message_Type == "Outgoing",
-        func.date(Message.datetime) == today
+        message.Message_Type == "Outgoing",
+        func.date(message.datetime) == today
     ).scalar()
     sent_week = db.query(func.count()).filter(
-        Message.Message_Type == "Outgoing",
-        func.date(Message.datetime) >= week_ago
+        message.Message_Type == "Outgoing",
+        func.date(message.datetime) >= week_ago
     ).scalar()
     sent_month = db.query(func.count()).filter(
-        Message.Message_Type == "Outgoing",
-        func.date(Message.datetime) >= month_ago
+        message.Message_Type == "Outgoing",
+        func.date(message.datetime) >= month_ago
     ).scalar()
 
     received_today = db.query(func.count()).filter(
-        Message.Message_Type == "Incoming",
-        func.date(Message.datetime) == today
+        message.Message_Type == "Incoming",
+        func.date(message.datetime) == today
     ).scalar()
     received_week = db.query(func.count()).filter(
-        Message.Message_Type == "Incoming",
-        func.date(Message.datetime) >= week_ago
+        message.Message_Type == "Incoming",
+        func.date(message.datetime) >= week_ago
     ).scalar()
     received_month = db.query(func.count()).filter(
-        Message.Message_Type == "Incoming",
-        func.date(Message.datetime) >= month_ago
+        message.Message_Type == "Incoming",
+        func.date(message.datetime) >= month_ago
     ).scalar()
 
-    total_active_contacts = db.query(func.count(Contact.contactId)).scalar()
+    total_active_contacts = db.query(func.count(contact.contactId)).scalar()
 
-    contacts_today = db.query(func.count(func.distinct(Message.WhatsappjId))).filter(
-        func.date(Message.datetime) == today
+    contacts_today = db.query(func.count(func.distinct(message.WhatsappjId))).filter(
+        func.date(message.datetime) == today
     ).scalar()
-    contacts_week = db.query(func.count(func.distinct(Message.WhatsappjId))).filter(
-        func.date(Message.datetime) >= week_ago
+    contacts_week = db.query(func.count(func.distinct(message.WhatsappjId))).filter(
+        func.date(message.datetime) >= week_ago
     ).scalar()
-    contacts_month = db.query(func.count(func.distinct(Message.WhatsappjId))).filter(
-        func.date(Message.datetime) >= month_ago
+    contacts_month = db.query(func.count(func.distinct(message.WhatsappjId))).filter(
+        func.date(message.datetime) >= month_ago
     ).scalar()
 
-    total_inboxes = db.query(func.count(Inbox.inbox_id)).scalar()
+    total_inboxes = db.query(func.count(inbox.inbox_id)).scalar()
 
     sent_by_hour_query = db.query(
-        extract('hour', Message.datetime).label('hour'),
+        extract('hour', message.datetime).label('hour'),
         func.count().label('count')
     ).filter(
-        Message.Message_Type == "Outgoing",
-        func.date(Message.datetime) == today
+        message.Message_Type == "Outgoing",
+        func.date(message.datetime) == today
     ).group_by('hour').all()
     sent_by_hour = {f"time_{int(h)}": c for h, c in sent_by_hour_query}
     sent_by_time = [{f"time_{h}": sent_by_hour.get(f"time_{h}", 0)} for h in range(24)]
 
     received_by_hour_query = db.query(
-        extract('hour', Message.datetime).label('hour'),
+        extract('hour', message.datetime).label('hour'),
         func.count().label('count')
     ).filter(
-        Message.Message_Type == "Incoming",
-        func.date(Message.datetime) == today
+        message.Message_Type == "Incoming",
+        func.date(message.datetime) == today
     ).group_by('hour').all()
     received_by_hour = {f"time_{int(h)}": c for h, c in received_by_hour_query}
     received_by_time = [{f"time_{h}": received_by_hour.get(f"time_{h}", 0)} for h in range(24)]
