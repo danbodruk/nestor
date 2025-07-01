@@ -43,7 +43,7 @@ POSTGRES_DB=your_database
 Start the server using Uvicorn:
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 You can expose the local development server via `ngrok` if needed:
