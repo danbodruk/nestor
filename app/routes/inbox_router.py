@@ -8,7 +8,7 @@ from fastapi import Body
 from sqlalchemy.orm import Session
 from app.database import get_db
 from uuid import uuid4
-from app.models import Inbox
+from app.models import inbox
 
 
 
@@ -28,7 +28,7 @@ def create_inbox(
     db: Session = Depends(get_db)
 ):
     try:
-        inbox = Inbox(
+        inbox = inbox(
             inbox_id=str(uuid4()),
             instance_id=instance_id,
             url_evo=url_evo,
@@ -58,7 +58,7 @@ def create_inbox(
 @inbox_route.get("/")
 def get_inbox(db: Session = Depends(get_db)):
     try:
-        inboxes = db.query(Inbox).all()
+        inboxes = db.query(inbox).all()
         result = [
             {
                 "inbox_id": inbox.inbox_id,
@@ -78,7 +78,7 @@ def get_inbox(db: Session = Depends(get_db)):
 @inbox_route.delete("/{inbox_id}}")
 def delete_inbox(inbox_id: str, db: Session = Depends(get_db)):
     try:
-        inbox = db.query(Inbox).filter(Inbox.inbox_id == inbox_id).first()
+        inbox = db.query(inbox).filter(inbox.inbox_id == inbox_id).first()
         if not inbox:
             return JSONResponse(
                 status_code=status.HTTP_404_NOT_FOUND,

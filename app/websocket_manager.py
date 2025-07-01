@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import WebSocket
 
-class ConnectionManager:
+class connection_manager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
 

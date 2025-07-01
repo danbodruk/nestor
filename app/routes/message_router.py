@@ -6,11 +6,11 @@ from datetime import datetime
 import json
 
 from app.database import get_db
-from app.models import Message, Contact, ImageMessage
-from app.websocket_manager import ConnectionManager
+from app.models import message, contact, image_message
+from app.websocket_manager import connection_manager
 
 message_route = APIRouter(tags=["Message"])
-manager = ConnectionManager()
+manager = connection_manager()
 
 @message_route.websocket("/ws/mensagens")
 async def websocket_endpoint(websocket: WebSocket):
@@ -26,26 +26,26 @@ def get_messages(instanceId: str = Query(...), contact_number: str = Query(...),
     try:
         whatsapp_id = f"{contact_number}@s.whatsapp.net"
         text_messages = (
-            db.query(Message)
+            db.query(message)
             .filter(
-                Message.instanceId == instanceId,
-                Message.WhatsappjId == whatsapp_id
+                message.instanceId == instanceId,
+                message.WhatsappjId == whatsapp_id
             )
-            .order_by(Message.datetime.asc())
+            .order_by(message.datetime.asc())
             .all()
         )
         image_messages = (
-            db.query(ImageMessage)
+            db.query(image_message)
             .filter(
-                ImageMessage.instanceId == instanceId,
-                ImageMessage.WhatsappjId == whatsapp_id
+                image_message.instanceId == instanceId,
+                image_message.WhatsappjId == whatsapp_id
             )
-            .order_by(ImageMessage.datetime.asc())
+            .order_by(image_message.datetime.asc())
             .all()
         )
         all_messages = []
         for msg in text_messages:
-            contact = db.query(Contact).filter(Contact.WhatsappjId == msg.WhatsappjId).first()
+            contact = db.query(contact).filter(contact.WhatsappjId == msg.WhatsappjId).first()
             all_messages.append({
                 "type": "text",
                 "messageId": msg.messageId,
@@ -56,7 +56,7 @@ def get_messages(instanceId: str = Query(...), contact_number: str = Query(...),
                 "datetime": msg.datetime.isoformat()
             })
         for img in image_messages:
-            contact = db.query(Contact).filter(Contact.WhatsappjId == img.WhatsappjId).first()
+            contact = db.query(contact).filter(contact.WhatsappjId == img.WhatsappjId).first()
             all_messages.append({
                 "type": "image",
                 "messageId": img.messageId,
@@ -99,7 +99,7 @@ async def webhook_mensagens(request: Request, db: Session = Depends(get_db)):
                 "contact": pushname,
                 "datetime": datetime_obj.isoformat(),
             }))
-            message = Message(
+            message = message(
                 messageId=messageId,
                 datetime=datetime_obj,
                 WhatsappjId=WhatsappjId,
@@ -110,7 +110,7 @@ async def webhook_mensagens(request: Request, db: Session = Depends(get_db)):
             db.add(message)
         elif "imageMessage" in message_data:
             img = message_data.get('imageMessage', {})
-            image_msg = ImageMessage(
+            image_msg = image_message(
                 id=messageId,
                 messageId=messageId,
                 WhatsappjId=WhatsappjId,
@@ -136,13 +136,13 @@ async def webhook_mensagens(request: Request, db: Session = Depends(get_db)):
                 "contact": pushname,
                 "datetime": datetime_obj.isoformat(),
             }))
-        existing_contact = db.query(Contact).filter(Contact.WhatsappjId == WhatsappjId).first()
+        existing_contact = db.query(contact).filter(contact.WhatsappjId == WhatsappjId).first()
         if existing_contact:
             if not fromMe:
                 existing_contact.pushname = pushname
                 existing_contact.updatedAt = datetime.now()
         else:
-            contact = Contact(
+            contact = contact(
                 contactId=messageId,
                 WhatsappjId=WhatsappjId,
                 pushname=pushname if not fromMe else None,

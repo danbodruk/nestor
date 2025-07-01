@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.sql import func
 from .database import Base
 
-class Inbox(Base):
+class inbox(Base):
     __tablename__ = "inbox"
 
     inbox_id = Column(String, primary_key=True, index=True)
@@ -12,7 +12,7 @@ class Inbox(Base):
     whatsappjID = Column(String, nullable=False)
     inbox_name = Column(String, nullable=False)
 
-class Message(Base):
+class message(Base):
     __tablename__ = "message"
 
     messageId = Column(String, primary_key=True, index=True)
@@ -22,7 +22,7 @@ class Message(Base):
     Message_Content = Column(String, nullable=True)
     instanceId = Column(String, nullable=False)
 
-class ImageMessage(Base):
+class image_message(Base):
     __tablename__ = "image_message"
     id = Column(String, primary_key=True, index=True)
     messageId = Column(String, index=True)
@@ -43,7 +43,7 @@ class ImageMessage(Base):
 
 
 
-class Contact(Base):
+class contact(Base):
     __tablename__ = "contact"
 
     contactId = Column(String, primary_key=True, index=True)
